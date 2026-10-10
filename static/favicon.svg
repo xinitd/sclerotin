@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sclerotin Beetle">
+  <rect width="64" height="64" fill="#0f0f10"/>
+
+  <g fill="none" stroke="#a01f2d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 28 16 C 26 10, 22 8, 22 8" />
+    <path d="M 36 16 C 38 10, 42 8, 42 8" />
+    <path d="M 26 26 L 16 18 L 12 22" />
+    <path d="M 38 26 L 48 18 L 52 22" />
+    <path d="M 24 36 L 14 36 L 12 42" />
+    <path d="M 40 36 L 50 36 L 52 42" />
+    <path d="M 26 46 L 16 54 L 20 60" />
+    <path d="M 38 46 L 48 54 L 44 60" />
+  </g>
+
+  <g fill="#a01f2d">
+    <path d="M 26 18 C 26 12, 38 12, 38 18 Z" />
+    <path d="M 22 28 C 20 20, 44 20, 42 28 Z" />
+    <path d="M 21 30 C 18 45, 26 56, 31 56 L 31 30 Z" />
+    <path d="M 43 30 C 46 45, 38 56, 33 56 L 33 30 Z" />
+  </g>
+</svg>

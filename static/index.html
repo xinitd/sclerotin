@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sclerotin - Secure FastAPI demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<meta name="description" content="One FastAPI endpoint behind Nginx, deployed with a strict Content-Security-Policy, isolated containers and a read-only root filesystem.">
+<meta property="og:title" content="Sclerotin - Secure FastAPI demo">
+<meta property="og:description" content="One FastAPI endpoint behind Nginx, deployed with a strict Content-Security-Policy, isolated containers and a read-only root filesystem.">
+<meta property="og:url" content="https://sclerotin.args.tech/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://sclerotin.args.tech/static/logo.jpeg">
+<meta property="og:image:alt" content="Sclerotin project logo">
+<meta property="og:locale" content="en_US">
+<link rel="canonical" href="https://sclerotin.args.tech/">
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/headers.js" defer></script>
+</head>
+<body>
+<main>
+
+<header>
+<h1>Sclerotin - Secure FastAPI demo</h1>
+<p class="lead">One endpoint, <code>/api/v1/ping</code>, behind Nginx in a hardened Docker Compose deployment. The endpoint is trivial on purpose: what this shows is everything around it.</p>
+</header>
+
+<section>
+<h2>The response speaks for itself</h2>
+<div class="term">
+<p class="term-cmd">$ curl -sD - https://sclerotin.args.tech/api/v1/ping</p>
+<pre class="term-out"><code id="headers">JavaScript is off or blocked, so this page could not make the request. Run the command above: what it prints is what this block would have shown.</code></pre>
+</div>
+<p class="note"><span id="fetched-at"></span> The response is not stored in the page: every load requests it anew and prints it as is. Nothing in it is left to defaults, and every choice is explained in the <a href="https://github.com/xinitd/sclerotin#how-it-works">project's README</a>.</p>
+</section>
+
+<section>
+<h2>What is in place</h2>
+<dl>
+
+<dt>A policy per kind of response</dt>
+<dd>API responses run under <code>default-src 'none'</code> and <code>frame-ancestors 'none'</code>. This page adds four directives set to <code>'self'</code>: for its stylesheet, its icon, the script that fills the block above and the request that script makes. Two more, <code>base-uri</code> and <code>form-action</code>, are set to <code>'none'</code>, since <code>default-src</code> does not cover them. The stylesheet and the script are files on this server, not markup, so nothing here needs <code>unsafe-inline</code> or a nonce. A relaxed policy applies only to the documentation pages, and only while they are switched on.</dd>
+
+<dt>Headers split across both layers</dt>
+<dd>Nginx sets HSTS, <code>X-Frame-Options</code> and <code>Referrer-Policy</code>; the application sets <code>Content-Security-Policy</code>, <code>X-Content-Type-Options</code> and <code>Permissions-Policy</code>. Responses Nginx produces on its own - a rate-limited 429, a 502 while the app restarts - get those three from Nginx instead, so an error page is never left bare.</dd>
+
+<dt>No route out of the application</dt>
+<dd>The app container sits on an internal network with no route to the internet. Even with code execution through a bug, an attacker can neither fetch a payload nor send anything out.</dd>
+
+<dt>Containers keep only what they need</dt>
+<dd>Read-only root filesystems, every Linux capability dropped, <code>no-new-privileges</code>, memory and CPU limits. Nginx gets three capabilities back; the application gets none and runs as an unprivileged user.</dd>
+
+<dt>A quiet edge</dt>
+<dd>Requests for unknown host names and bare IPs are dropped without an answer. Rate limits apply per client address, and IPv6 clients keep their own address instead of showing up as the gateway.</dd>
+
+<dt>TLS without loose ends</dt>
+<dd>TLS 1.2 and 1.3 with the Mozilla intermediate ciphers, post-quantum hybrid key exchange (X25519MLKEM768) for clients that support it, session tickets off, HSTS for two years including subdomains.</dd>
+
+</dl>
+</section>
+
+<section>
+<h2>What this is not</h2>
+<p>Not a framework, not a library, not a starting point for an application. The Python side is one short file and is meant to stay that way. This is a reference for the parts that usually get decided in a hurry: the proxy, the container, the network and the headers.</p>
+</section>
+
+<footer>
+<p>
+<a href="https://github.com/xinitd/sclerotin">Source on GitHub</a>
+<span class="sep">·</span> part of <a href="https://args.tech">ARGS LAB</a>
+</p>
+</footer>
+
+</main>
+</body>
+</html>

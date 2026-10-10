@@ -1,0 +1,14 @@
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose*.yaml
+*.md
+.env*
+
+env/
+__pycache__/
+*.pyc
+
+webserver/
+*.pem

@@ -1,0 +1,154 @@
+:root {
+  --bg: #0f0f10;
+  --panel: #17171a;
+  --border: #26262a;
+  --fg: #e8e8ea;
+  --muted: #9a9aa2;
+  --accent: #dc3545;
+  --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.65 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  overflow-wrap: break-word;
+}
+
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.9rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+p {
+  margin: 0 0 0.5rem;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+section {
+  margin-top: 2rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--fg);
+}
+
+.term {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.term-cmd,
+.term-out {
+  margin: 0;
+  padding: 1rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.term-cmd {
+  border-bottom: 1px solid var(--border);
+  color: var(--accent);
+}
+
+.term-out {
+  overflow-x: auto;
+  color: var(--fg);
+  white-space: pre;
+}
+
+.term-out code {
+  color: inherit;
+  font-size: inherit;
+}
+
+.note {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+dl {
+  margin: 0;
+}
+
+dt {
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+dt:first-child {
+  margin-top: 0;
+}
+
+dd {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+footer p {
+  margin: 0;
+}
+
+.sep {
+  margin: 0 0.25rem;
+  color: var(--muted);
+}
+
+@media (max-width: 34rem) {
+  h1 {
+    font-size: 1.55rem;
+  }
+
+  .term-cmd,
+  .term-out {
+    font-size: 0.76rem;
+  }
+}
