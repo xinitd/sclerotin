@@ -119,6 +119,8 @@ After a change to `webserver/default.conf`, also run `docker compose restart web
 
 `requirements.txt` pins the full dependency set tested in the image, so every build installs the same versions, and their security updates don't arrive on their own either. Only `pydantic-core` is not listed: `pydantic` already pins it to an exact version, and a line of its own would get separate Dependabot pull requests that conflict with that pin and break the build. `.github/dependabot.yml` asks Dependabot for weekly pull requests for `requirements.txt`, for the base image of the `Dockerfile` and for the Nginx image in `docker-compose.yaml`. To upgrade by hand, in a clean venv: `pip install -U fastapi uvicorn && pip freeze --exclude pydantic-core > requirements.txt`, then rebuild and retest.
 
+Dependabot changes only the line of the package it updates, so a release that brings in a new dependency would install it unpinned. `.github/workflows/ci.yml` catches that on every pull request and every push to `main`: it builds the image, compares `pip freeze --exclude pydantic-core` inside it with `requirements.txt` and fails with the diff. It covers the Python side only: an Nginx update still has to be checked on a running deployment. The workflow's only action is pinned by commit SHA, and Dependabot updates it as well.
+
 ## Sizing
 
 The limits fit this demo: one endpoint on a small server. A project with real traffic has to size them by hand, since none of them adjusts on its own:
