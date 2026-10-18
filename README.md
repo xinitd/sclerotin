@@ -121,6 +121,37 @@ After a change to `webserver/default.conf`, also run `docker compose restart web
 
 Dependabot changes only the line of the package it updates, so a release that brings in a new dependency would install it unpinned. `.github/workflows/ci.yml` catches that on every pull request and every push to `main`: it builds the image, compares `pip freeze --exclude pydantic-core` inside it with `requirements.txt` and fails with the diff. It covers the Python side only: an Nginx update still has to be checked on a running deployment. The workflow's only action is pinned by commit SHA, and Dependabot updates it as well.
 
+### After an update
+
+`git pull` prints the range it applied, such as `Updating 647412b..f80512f`: the first commit is the version to return to. If a check below fails, `git checkout` that commit and run `docker compose up -d --build`, with the extra steps above if `default.conf` or `networks:` changed. Once a fix is merged, `git switch main` and update as usual.
+
+Check what the server runs, not only what CI built: the server builds its own image, and the base image tag may point to a newer build than the one CI tested.
+
+```
+docker compose ps
+docker compose exec app python --version
+docker compose exec app pip freeze --no-cache-dir
+```
+
+`app` has to be `(healthy)`, and the list has to match `requirements.txt` plus `pydantic_core`. When only the app changed, a `webserver` created days ago but up for minutes is expected: `restart: true` restarts Nginx without recreating it. `--no-cache-dir` only silences a warning: `appuser` has no home directory and the filesystem is read-only, so pip has nowhere to keep a cache.
+
+Then check from another machine, for the reason given in [After the first deploy](#after-the-first-deploy). `curl -sI https://sclerotin.args.tech/api/v1/ping` has to return `200` with every security header exactly once: a duplicate means an Nginx fallback from `default.conf` was added next to the app's own header. In a browser, open the site with an empty cache, so it loads the new `style.css` and `headers.js` rather than cached copies, and check the console for CSP errors.
+
+Once the checks pass, clean up what the previous build left behind:
+
+```
+docker image prune
+docker builder prune -a
+```
+
+The first removes images with no name, the second the whole build cache, so the next build runs every step again. Neither removes the previous Nginx image: Compose pulls it by digest, and Docker counts the digest as its name, so the image is not dangling even though `docker system df -v` lists it as `<none>`. The running Nginx is listed as `<none>` too, with 1 in the CONTAINERS column. Remove the old one by the digest the update replaced, from the removed line in the pull request or in `git log -p docker-compose.yaml`:
+
+```
+docker image rm nginx@sha256:<old digest>
+```
+
+`docker system df` then shows nothing reclaimable. `docker image prune -a` would remove the old Nginx image as well, but along with every other image that has no container.
+
 ## Sizing
 
 The limits fit this demo: one endpoint on a small server. A project with real traffic has to size them by hand, since none of them adjusts on its own:
