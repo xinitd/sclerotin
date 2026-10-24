@@ -11,9 +11,10 @@ on:
 permissions:
   contents: read
 
-# A newer push to the same branch or pull request makes the older run pointless
+# A newer push to a pull request makes its older run pointless. Each push to main
+# gets a group of its own: a merge must not cancel the run of the commit before it
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: true
 
 jobs:
