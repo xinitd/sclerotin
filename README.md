@@ -105,13 +105,7 @@ Once the domain has an AAAA record, check that IPv6 clients keep their addresses
 
 Deploy updates with `git pull` and `docker compose up -d --build`, without a service name. Nginx resolves `app` to an IP once at startup, and a recreated `app` container may get a new IP; `restart: true` inside `depends_on` (Compose >= 2.17) restarts `webserver` whenever `app` is recreated. `docker compose up -d --build app` limits the run to `app`, so Nginx is not restarted and may keep proxying to the old IP (502).
 
-That command never refreshes the base images themselves: Nginx is pinned by its exact SHA256 digest, and the Python build reuses its cached base image. To refresh the application build explicitly:
-
-```
-docker compose pull
-docker compose build --pull
-docker compose up -d
-```
+That command never changes the base images on its own: both are pinned by digest, Nginx in `docker-compose.yaml` and Python in the `Dockerfile`. A tag is not enough: the build checks it against Docker Hub every time, so a `python:3.14.8-slim` rebuilt upstream would reach the server without passing CI. With the digest, every build uses the base image CI tested, and a newer build comes as a Dependabot pull request that changes the digest. The tag in front of the digest is there for people and for Dependabot: Docker pulls by the digest.
 
 Changing the network options means the network has to be recreated: after a change to `networks:` in `docker-compose.yaml`, run `docker compose down` before `up`.
 
@@ -125,7 +119,7 @@ Dependabot changes only the line of the package it updates, so a release that br
 
 `git pull` prints the range it applied, such as `Updating 647412b..f80512f`: the first commit is the version to return to. If a check below fails, `git checkout` that commit and run `docker compose up -d --build`, with the extra steps above if `default.conf` or `networks:` changed. Once a fix is merged, `git switch main` and update as usual.
 
-Check what the server runs, not only what CI built: the server builds its own image, and the base image tag may point to a newer build than the one CI tested.
+Check what the server runs, not only what CI built: the server builds its own image, and an update that didn't apply, such as `docker compose up -d` without `--build`, shows up only here.
 
 ```
 docker compose ps
@@ -133,7 +127,7 @@ docker compose exec app python --version
 docker compose exec app pip freeze --no-cache-dir
 ```
 
-`app` has to be `(healthy)`, and the list has to match `requirements.txt` plus `pydantic_core`. When only the app changed, a `webserver` created days ago but up for minutes is expected: `restart: true` restarts Nginx without recreating it. `--no-cache-dir` only silences a warning: `appuser` has no home directory and the filesystem is read-only, so pip has nowhere to keep a cache.
+`app` has to be `(healthy)`, and the list has to match `requirements.txt` plus `pydantic_core`. When only the app changed, a `webserver` created days ago but up for minutes is expected: `restart: true` restarts Nginx without recreating it. An ID instead of `sclerotin-app` in the IMAGE column means the tag moved after the container was created, for example by a separate `docker compose build`: with the containerd image store, each build gets a new image ID even when the content is the same, because its provenance attestation differs, and the next `docker compose up -d --build` recreates the container. `--no-cache-dir` only silences a warning: `appuser` has no home directory and the filesystem is read-only, so pip has nowhere to keep a cache.
 
 Then check from another machine, for the reason given in [After the first deploy](#after-the-first-deploy). `curl -sI https://sclerotin.args.tech/api/v1/ping` has to return `200` with every security header exactly once: a duplicate means an Nginx fallback from `default.conf` was added next to the app's own header. In a browser, open the site with an empty cache, so it loads the new `style.css` and `headers.js` rather than cached copies, and check the console for CSP errors.
 
