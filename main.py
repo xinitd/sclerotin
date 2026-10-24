@@ -25,7 +25,7 @@ DOCS_ENABLED = os.environ.get('DOCS_ENABLED', 'false').lower() == 'true'
 app = FastAPI(
     title='Sclerotin - Secure FastAPI demo',
     description='One endpoint behind Nginx in a hardened Docker Compose deployment.',
-    version='1.0.0',
+    version='1.1.0',
     openapi_url='/openapi.json' if DOCS_ENABLED else None,
 )
 
