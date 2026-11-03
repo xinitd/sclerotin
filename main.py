@@ -152,7 +152,11 @@ class PingResponse(BaseModel):
     }
 
 
-# HEAD too: uptime monitors that probe with HEAD would get a 405 otherwise
-@app.api_route('/api/v1/ping', methods=['GET', 'HEAD'], summary='Health check')
+# HEAD too: uptime monitors that probe with HEAD would get a 405 otherwise. HEAD gets
+# a route of its own, outside the schema: on a shared route FastAPI gives both methods
+# one operationId, which has to be unique in the schema. The price: a 405 lists only
+# GET in Allow, as the router answers it from the first route that matches the path
+@app.head('/api/v1/ping', include_in_schema=False)
+@app.get('/api/v1/ping', summary='Health check')
 async def ping() -> PingResponse:
     return PingResponse(status='ok', message='Sclerotin is running!')
