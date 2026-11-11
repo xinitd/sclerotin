@@ -6,3 +6,6 @@ select = ["E", "F", "W", "I", "B", "S", "UP", "SIM"]
 
 [lint.isort]
 lines-after-imports = 2
+
+[lint.per-file-ignores]
+"tests/*" = ["S101"]

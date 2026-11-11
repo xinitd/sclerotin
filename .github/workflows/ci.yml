@@ -63,3 +63,26 @@ jobs:
 
       - name: Run ruff
         run: ruff check --output-format=github .
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Python of the Dockerfile's base image
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Install the dev tools
+        run: pip install --no-cache-dir -r requirements-dev.txt
+
+      # main.py is small, so every branch of it is tested: a new one without a test fails here
+      - name: Run the tests with branch coverage
+        run: |
+          coverage run --branch --source=main -m pytest
+          coverage report --show-missing --fail-under=100
