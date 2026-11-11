@@ -1,0 +1,6 @@
+[pytest]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+filterwarnings = ["error"]
+xfail_strict = true
