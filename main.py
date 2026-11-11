@@ -68,7 +68,8 @@ DOCS_PATHS = (
 
 @app.middleware('http')
 async def add_security_headers(request: Request, call_next):
-    # The path the router matches; url.path re-parses it and reads /%3F as /
+    # The path the router matched, so the CSP follows the route that answered.
+    # url.path is rebuilt from it, and before Starlette 1.9 it read /%3F as /
     path = request.scope['path']
 
     # Unhandled exceptions would otherwise be answered by ServerErrorMiddleware,
