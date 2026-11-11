@@ -211,3 +211,7 @@ The script asks this server for `/api/v1/ping` and prints the response, headers 
 Every file has a route of its own and nothing is mounted: a mounted directory publishes whatever ends up in it, an editor's backup file included, while the routes are an allowlist, like the capabilities and the policies elsewhere. `/favicon.ico` answers `204` for the browsers that ask for it regardless.
 
 Every path other than `/` carries `X-Robots-Tag: noindex`, while `robots.txt` disallows nothing: a crawler has to be allowed to fetch a path before it can see that header.
+
+## Contributing
+
+Bug reports, suggestions and pull requests are welcome: [CONTRIBUTING.md](CONTRIBUTING.md) explains how, and what a change needs. Security problems go through [SECURITY.md](SECURITY.md).
