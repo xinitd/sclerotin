@@ -1,5 +1,7 @@
 # Sclerotin
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16567/badge)](https://www.bestpractices.dev/projects/16567)
+
 <img src="static/logo.jpeg" alt="Sclerotin logo" width="300">
 
 A hardened reference deployment of FastAPI behind Nginx with Docker Compose: strict CSP, security headers, isolated container networks, read-only containers and TLS with post-quantum key exchange. Running at [sclerotin.args.tech](https://sclerotin.args.tech/).
