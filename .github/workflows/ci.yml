@@ -18,6 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   pinned-dependencies:
     name: Pinned dependencies
     runs-on: ubuntu-24.04
@@ -43,3 +44,22 @@ jobs:
 
       - name: Check installed packages for conflicts
         run: docker run --rm --network none sclerotin-app:ci pip check
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # ruff is pinned in requirements-dev.txt, where Dependabot updates it
+      - name: Install ruff
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --no-cache-dir -r requirements-dev.txt
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+
+      - name: Run ruff
+        run: ruff check --output-format=github .
