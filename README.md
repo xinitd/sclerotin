@@ -107,7 +107,7 @@ Once the domain has an AAAA record, check that IPv6 clients keep their addresses
 
 Deploy updates with `git pull` and `docker compose up -d --build`, without a service name. Nginx resolves `app` to an IP once at startup, and a recreated `app` container may get a new IP; `restart: true` inside `depends_on` (Compose >= 2.17) restarts `webserver` whenever `app` is recreated. `docker compose up -d --build app` limits the run to `app`, so Nginx is not restarted and may keep proxying to the old IP (502).
 
-That command never changes the base images on its own: both are pinned by digest, Nginx in `docker-compose.yaml` and Python in the `Dockerfile`. A tag is not enough: the build checks it against Docker Hub every time, so a `python:3.14.8-slim` rebuilt upstream would reach the server without passing CI. With the digest, every build uses the base image CI tested, and a newer build comes as a Dependabot pull request that changes the digest. The tag in front of the digest is there for people and for Dependabot: Docker pulls by the digest.
+That command never changes the base images on its own: both are pinned by digest, Nginx in `docker-compose.yaml` and Python in the `Dockerfile`. A tag is not enough: the build checks it against Docker Hub every time, so a `python:3.15.2-slim` rebuilt upstream would reach the server without passing CI. With the digest, every build uses the base image CI tested, and a newer build comes as a Dependabot pull request that changes the digest. The tag in front of the digest is there for people and for Dependabot: Docker pulls by the digest.
 
 Changing the network options means the network has to be recreated: after a change to `networks:` in `docker-compose.yaml`, run `docker compose down` before `up`.
 
