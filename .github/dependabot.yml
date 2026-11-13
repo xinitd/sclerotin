@@ -6,15 +6,18 @@ updates:
     schedule:
       interval: weekly
 
+  # Daily: Dependabot waits three days after a tag is pushed, and official images
+  # are rebuilt every few days, so a weekly check could keep missing the window
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
 
+  # Daily for the same reason
   - package-ecosystem: docker-compose
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
 
   - package-ecosystem: github-actions
     directory: /
