@@ -1,25 +1,41 @@
 version: 2
 updates:
 
+  # Monthly, in one pull request. Security fixes don't wait for it: Dependabot
+  # security updates open them as soon as an alert is raised
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      pip:
+        applies-to: version-updates
+        patterns:
+          - "*"
 
-  # Daily: Dependabot waits three days after a tag is pushed, and official images
-  # are rebuilt every few days, so a weekly check could keep missing the window
+  # Every day of the first week: Dependabot waits until a build is three days old,
+  # and official images are rebuilt every few days, so a single monthly check could
+  # skip the month. Images get no security updates, so this is their only channel
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: daily
+      interval: cron
+      cronjob: "0 6 1-7 * *"
 
-  # Daily for the same reason
+  # Same schedule for the same reason
   - package-ecosystem: docker-compose
     directory: /
     schedule:
-      interval: daily
+      interval: cron
+      cronjob: "0 6 1-7 * *"
 
+  # Same as pip
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      github-actions:
+        applies-to: version-updates
+        patterns:
+          - "*"
