@@ -30,7 +30,7 @@ services:
       start_period: 5s
 
   webserver:
-    image: nginx:stable-alpine@sha256:901e593c95dc85f5a729f5765516321366ef4ac401821431d408897e95287d0a
+    image: nginx:stable-alpine@sha256:9e596d26590907ed433eb53c83c4016038025d4e004b15922786ba85c8957264
     restart: unless-stopped
     depends_on:
       app:
